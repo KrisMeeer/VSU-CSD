@@ -1,0 +1,1 @@
+[LenovoTab - 350.0, SamsungGalaxyTab - 400.0, Итоговая цена = 750.0]
