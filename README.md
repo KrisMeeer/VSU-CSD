@@ -1,4 +1,4 @@
 # VSU-CSD
 Archive of my assignments from the courses
 ***
-<h2>Направление:</h2>
+[Управление данными](ud/ud.md#Управление-данными)
