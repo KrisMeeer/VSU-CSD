@@ -1,4 +1,4 @@
 # VSU-CSD
 Archive of my assignments from the courses
 ***
-[Управление данными](ud/ud.md#Управление-данными)
+[Управление данными](VSU-CSD/ud.md#Управление-данными)
