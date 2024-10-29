@@ -1,5 +1,5 @@
 # VSU-CSD
 Archive of my assignments from the courses
 ***
-[1 semestr]()
-[Управление данными](ud#Управление-данными)
+##Semesters
+  + [1 semestr](1 semester#1 сем)
