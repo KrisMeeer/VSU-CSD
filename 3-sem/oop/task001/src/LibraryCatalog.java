@@ -1,102 +1,94 @@
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class LibraryCatalog {
-    private static final List<BookLocation> catalog = new ArrayList<>();
+    private final List<BookLocation> catalog = new ArrayList<>();
 
-    public static void main(String[] args) {
+    //добавляем книги в каталог
+    public void addBook(String title, String author, String room, String cabinet, String shelf) {
+        catalog.add(new BookLocation(title, author, room, cabinet, shelf));
+    }
 
-        try {
-            System.setOut(new PrintStream(System.out, true, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+    public int getCatalogSize() {
+        return catalog.size();
+    }
+
+    public BookLocation getBook(int index) {
+        return catalog.get(index);
+    }
+
+    // Метод для поиска книги по названию или автору
+    public void findBook(String query) {
+        boolean found = false;
+        for (BookLocation book : catalog) {
+            if (book.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                    book.getAuthor().toLowerCase().contains(query.toLowerCase())) {
+                System.out.println("Найденная книга: ");
+                System.out.printf("%s, %s (Комната: %s, Шкаф: %s, Полка: %s)%n",
+                        book.getTitle(), book.getAuthor(),
+                        book.getRoom(), book.getCabinet(), book.getShelf());
+                found = true;
+            }
         }
-        Scanner scanner = new Scanner(System.in);
+        if (!found) {
+            System.out.println("Книги не найдены.");
+        }
+    }
 
+    // Метод для работы с консолью: добавление книг и поиск
+    public void runConsole() {
+        Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("\nМеню:");
             System.out.println("1. Добавить книгу");
-            System.out.println("2. Просмотреть все книги");
-            System.out.println("3. Найти книгу");
-            System.out.println("4. Выйти");
+            System.out.println("2. Найти книгу");
+            System.out.println("3. Выйти");
 
             String choice = scanner.nextLine();
 
             switch (choice) {
                 case "1":
-                    addBook(scanner);
+                    addBookConsole(scanner);
                     break;
                 case "2":
-                    viewAllBooks();
+                    System.out.println("Введите название или автора книги для поиска:");
+                    String query = scanner.nextLine();
+                    findBook(query);
                     break;
                 case "3":
-                    findBook(scanner);
-                    break;
-                case "4":
                     System.out.println("Выход из программы.");
                     System.exit(0);
+                    break;
                 default:
                     System.out.println("Некорректный ввод, попробуйте снова.");
             }
         }
     }
 
-    private static void addBook(Scanner scanner) {
-        System.out.println("Введите название книги:");
-        String title = scanner.nextLine();
+    // Метод для добавления книги через консоль
+    private void addBookConsole(Scanner scanner) {
+        String title = getValidInput(scanner, "Введите название книги:");
+        String author = getValidInput(scanner, "Введите имя автора:");
+        String room = getValidInput(scanner, "Введите комнату:");
+        String cabinet = getValidInput(scanner, "Введите шкаф:");
+        String shelf = getValidInput(scanner, "Введите полку:");
 
-        System.out.println("Введите имя автора:");
-        String author = scanner.nextLine();
-
-        System.out.println("Введите комнату:");
-        String room = scanner.nextLine();
-
-        System.out.println("Введите шкаф:");
-        String cabinet = scanner.nextLine();
-
-        System.out.println("Введите полку:");
-        String shelf = scanner.nextLine();
-
-        catalog.add(new BookLocation(title, author, room, cabinet, shelf));
+        addBook(title, author, room, cabinet, shelf);
         System.out.println("Книга успешно добавлена.");
     }
 
-    private static void viewAllBooks() {
-        if (catalog.isEmpty()) {
-            System.out.println("Каталог пуст.");
-        } else {
-            System.out.println("Список всех книг:");
-            for (int i = 0; i < catalog.size(); i++) {
-                BookLocation book = catalog.get(i);
-                System.out.printf("%d. %s, %s (Комната: %s, Шкаф: %s, Полка: %s)%n",
-                        i + 1, book.getTitle(), book.getAuthor(),
-                        book.getRoom(), book.getCabinet(), book.getShelf());
+    private String getValidInput(Scanner scanner, String prompt) {
+        String input;
+        while (true) {
+            System.out.println(prompt);
+            input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("Ошибка: введено пустое значение. Пожалуйста, попробуйте снова.");
+            } else {
+                break;
             }
         }
-    }
-
-    private static void findBook(Scanner scanner) {
-        System.out.println("Введите название или автора книги для поиска:");
-        String query = scanner.nextLine().toLowerCase();
-
-        List<BookLocation> results = new ArrayList<>();
-        for (BookLocation book : catalog) {
-            if (book.getTitle().toLowerCase().contains(query) ||
-                    book.getAuthor().toLowerCase().contains(query)) {
-                results.add(book);
-            }
-        }
-
-        if (results.isEmpty()) {
-            System.out.println("Книги не найдены.");
-        } else {
-            System.out.println("Найденные книги:");
-            for (BookLocation book : results) {
-                System.out.printf("%s, %s (Комната: %s, Шкаф: %s, Полка: %s)%n",
-                        book.getTitle(), book.getAuthor(),
-                        book.getRoom(), book.getCabinet(), book.getShelf());
-            }
-        }
+        return input;
     }
 }
