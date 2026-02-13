@@ -1,0 +1,361 @@
+{UTF-8}
+Меркутова Кристина 3 группа=
+	6
+	~	
+	~		|
+
+error at the end of Scrum sprint or in Waterfall=IF THEN ELSE ( switch=0 , 0.4 , 0.05\
+		 )
+	~	
+	~		|
+
+"waterfall - 0 scrum - 1 kanban - 2"=0
+	~	
+	~		|
+
+work to do in Kanban=PULSE(0, 4) + PULSE TRAIN(1, 1, 5, 2000) * IF THEN ELSE ( Original work to do\
+		>0 , 1 , 0 )
+	~	
+	~		|
+
+requirement developments rate=IF THEN ELSE ( switch=2 , IF THEN ELSE ( Selected Requirements\
+		 > productivity * n0 developers
+	 , (productivity * n0 developers) * (1 - error in Kanban) , Selected Requirements * \
+		(1 - error in Kanban) ) , IF THEN ELSE
+	 ( Selected Requirements > productivity*n0 developers , (productivity * n0 developers
+	) * (1 - error in sprint Scrum or in Waterfall) , Selected Requirements ) )
+	~	
+	~		|
+
+input requirements=IF THEN ELSE ( switch=0 , Product Backlog , IF THEN ELSE ( switch=\
+		1 , 0 , IF THEN ELSE ( Product Backlog>=n0 requirements to do in each iteration , Product Backlog\
+		 , 0 ) )  )
+	~	
+	~		|
+
+rework discovery in Scrum or Waterfall=IF THEN ELSE ( switch=2 , 0 , IF THEN ELSE(Selected Requirements\
+		 < 0.05,Fraction work done * error at the end of Scrum sprint or in Waterfall
+	,0) )
+	~	
+	~		|
+
+error in Kanban=0.1
+	~	
+	~		|
+
+n0 requirements to do in each iteration=IF THEN ELSE ( switch=1 , rework discovery in Scrum or Waterfall\
+		 , IF THEN ELSE ( switch=2 , 5 , 0 )  )
+	~	
+	~		|
+
+input features=Product Backlog
+	~	
+	~		|
+
+Selected Requirements= INTEG (IF THEN ELSE ( switch=0 , rework discovery+input requirements\
+		-requirement developments rate , IF THEN ELSE ( switch=1 , rework discovery-requirement developments rate\
+		+selected features in output , -requirement developments rate+input requirements ) \
+		),
+		0)
+	~	
+	~		|
+
+delay=IF THEN ELSE ( switch=0 , 120 , 0 )
+	~	
+	~		|
+
+delay in scrum sprint=5
+	~	
+	~		|
+
+selected features in output=IF THEN ELSE ( Sprint Backlog>0 , PULSE TRAIN(0, 1, delay in scrum sprint\
+		, 2000)* IF THEN ELSE ( Selected Requirements<=0 , 10 , 0 ) , 0 )
+	~	
+	~		|
+
+Original work to do= INTEG (IF THEN ELSE ( switch=2 , -work to do in Kanban , -work in input\
+		 ) ,
+		210)
+	~	
+	~		|
+
+Sprint Backlog= INTEG (input features-selected features in output,
+		0)
+	~	
+	~		|
+
+switch=0
+	~	
+	~		|
+
+rework discovery=IF THEN ELSE ( switch=0 , Rework , IF THEN ELSE ( switch=1 , PULSE TRAIN\
+		 ( 0 , 1 , delay in scrum sprint , 2000 ) * IF THEN ELSE 
+	( Selected Requirements<=0 , Rework , 0 ) , 0 )  )
+	~	
+	~		|
+
+Product Backlog= INTEG (IF THEN ELSE ( switch=0 , work in output-input requirements ,\
+		 IF THEN ELSE ( switch=1 , work in output-input features , work to do in Kanban-input requirements\
+		 ) ),
+		0)
+	~	
+	~		|
+
+work done rate=IF THEN ELSE ( switch=0 , IF THEN ELSE (Selected Requirements<0.05, Fraction work done\
+		*(1 - error at the end of Scrum sprint or in Waterfall
+	), 0) , IF THEN ELSE ( switch=1 , IF THEN ELSE (Selected Requirements<n0 requirements to do in each iteration\
+		, Fraction work done*(1 - error at the end of Scrum sprint or in Waterfall
+	), 0) , IF THEN ELSE ( Fraction work done>=n0 requirements to do in each iteration*0.5\
+		, Fraction work done , 0 ) )  )
+	~	
+	~		|
+
+Rework= INTEG (rework discovery in Scrum or Waterfall-rework discovery,
+		0)
+	~	
+	~		|
+
+error in sprint Scrum or in Waterfall=0.1
+	~	
+	~		|
+
+Fraction work done= INTEG (requirement developments rate-rework discovery in Scrum or Waterfall\
+		-work done rate,
+		0)
+	~	
+	~		|
+
+work done= INTEG (work done rate-test rate*0,
+		0)
+	~	
+	~		|
+
+n0 developers=10
+	~	
+	~		|
+
+productivity=0.025
+	~	
+	~		|
+
+acceptance rate=acceptance testing/5
+	~	
+	~		|
+
+acceptance testing= INTEG (unit test rate-acceptance rate,
+		0)
+	~	
+	~		|
+
+Elaborated Planning= INTEG (1*(work in input-work in output),
+		0)
+	~	
+	~		|
+
+Live=acceptance rate
+	~	
+	~		|
+
+test rate=work done
+	~	
+	~		|
+
+unit test rate=work done to test/20
+	~	
+	~		|
+
+work done to test= INTEG (test rate-unit test rate,
+		0)
+	~	
+	~		|
+
+work in input=Original work to do
+	~	
+	~		|
+
+work in output=STEP ( Elaborated Planning , delay )
+	~	
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 2000
+	~	Hour
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Hour
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Hour [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	Hour [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,45,2
+10,1,Original work to do,877,1012,78,50,3,3,0,24,-1,1,0,0,0-0-0,0-0-0,|18|B|0-0-0,0,0,0,0,0,0
+10,2,Live,2443,567,46,26,3,3,0,24,-1,1,0,0,0-0-0,0-0-0,|16|B|0-0-0,0,0,0,0,0,0
+10,3,Product Backlog,970,515,46,36,3,3,0,0,-1,1,0,0,0,0,0,0,0,0
+10,4,Selected Requirements,1344,563,52,68,3,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,5,7,3,100,0,0,22,0,192,0,-1--1--1,,1|(1115,499)|
+1,6,7,4,4,0,0,22,0,192,0,-1--1--1,,1|(1259,499)|
+11,7,0,1221,499,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,8,input requirements,1221,533,64,26,40,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,9,3,8,1,0,0,0,0,192,0,-1--1--1,,1|(1093,450)|
+10,10,Elaborated Planning,935,839,46,26,3,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,11,13,1,100,0,0,22,0,192,0,-1--1--1,,1|(942,932)|
+1,12,13,10,4,0,0,22,0,192,0,-1--1--1,,1|(942,875)|
+11,13,0,942,894,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,14,work in input,942,928,51,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,15,17,10,100,0,0,22,0,192,0,-1--1--1,,1|(939,753)|
+1,16,17,3,4,0,0,22,0,192,0,-1--1--1,,1|(939,614)|
+11,17,0,939,686,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,18,work in output,939,720,55,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,19,1,14,1,0,0,0,0,192,0,-1--1--1,,1|(935,1026)|
+1,20,10,18,1,0,0,0,0,192,0,-1--1--1,,1|(1003,787)|
+10,21,delay,940,1171,46,26,8,3,0,16,-1,1,0,0,0-0-0,0-0-0,||B|0-0-0,0,0,0,0,0,0
+1,22,21,18,1,0,0,0,0,192,0,-1--1--1,,1|(1046,1045)|
+10,23,work done,2088,1080,46,26,3,3,0,0,-1,1,0,0,0,0,0,0,0,0
+10,24,work done to test,2355,1081,46,26,3,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,25,27,23,100,0,0,22,0,192,0,-1--1--1,,1|(2149,1085)|
+1,26,27,24,4,0,0,22,0,192,0,-1--1--1,,1|(2243,1085)|
+11,27,0,2171,1085,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,28,test rate,2171,1119,46,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,29,acceptance testing,2449,805,59,26,3,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,30,32,24,100,0,0,22,0,192,0,-1--1--1,,1|(2452,1081)|
+1,31,32,29,4,0,0,22,0,192,0,-1--1--1,,1|(2452,916)|
+11,32,0,2452,1009,6,8,34,3,0,0,4,0,0,0,0,0,0,0,0,0
+10,33,unit test rate,2508,1009,50,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,34,36,29,100,0,0,22,0,192,0,-1--1--1,,1|(2447,728)|
+1,35,36,2,4,0,0,22,0,192,0,-1--1--1,,1|(2447,627)|
+11,36,0,2447,670,6,8,34,3,0,0,4,0,0,0,0,0,0,0,0,0
+10,37,acceptance rate,2513,670,60,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,38,23,28,1,0,0,0,0,192,0,-1--1--1,,1|(2112,1165)|
+1,39,24,33,1,0,0,0,0,192,0,-1--1--1,,1|(2440,1149)|
+1,40,29,37,1,0,0,0,0,192,0,-1--1--1,,1|(2539,758)|
+10,41,Fraction work done,2102,558,52,67,3,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,42,44,4,100,0,0,22,0,192,0,-1--1--1,,1|(1522,519)|
+1,43,44,41,4,0,0,22,0,192,0,-1--1--1,,1|(1855,519)|
+11,44,0,1655,519,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,45,requirement developments rate,1655,553,69,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,46,Rework,1653,623,46,26,3,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,47,49,41,100,0,0,22,0,192,0,-1--1--1,,1|(1936,620)|
+1,48,49,46,4,0,0,22,0,192,0,-1--1--1,,1|(1753,620)|
+11,49,0,1815,620,8,6,33,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,50,rework discovery in Scrum or Waterfall,1815,652,71,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,51,53,46,100,0,0,22,0,192,0,-1--1--1,,1|(1557,605)|
+1,52,53,4,4,0,0,22,0,192,0,-1--1--1,,1|(1443,605)|
+11,53,0,1499,605,8,6,33,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,54,rework discovery,1499,643,54,32,40,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,55,57,41,100,0,0,22,0,192,0,-1--1--1,,1|(2081,713)|
+1,56,57,23,4,0,0,22,0,192,0,-1--1--1,,1|(2081,936)|
+11,57,0,2081,810,6,8,34,3,0,0,4,0,0,0,0,0,0,0,0,0
+10,58,work done rate,2122,810,35,46,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,59,41,58,1,0,0,0,0,192,0,-1--1--1,,1|(2246,598)|
+1,60,41,50,1,0,0,0,0,192,0,-1--1--1,,1|(1965,667)|
+1,61,50,46,1,0,0,0,0,192,0,-1--1--1,,1|(1706,679)|
+10,62,n0 developers,1822,443,54,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,63,error in sprint Scrum or in Waterfall,1927,567,77,26,8,3,0,16,-1,0,0,0,0-0-0,0-0-0,||B|0-0-0,0,0,0,0,0,0
+10,64,productivity,1697,407,46,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,65,64,44,1,0,0,0,0,192,0,-1--1--1,,1|(1670,500)|
+1,66,62,45,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,67,63,45,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,68,4,45,1,0,0,0,0,192,0,-1--1--1,,1|(1501,550)|
+10,69,error at the end of Scrum sprint or in Waterfall,1883,849,68,36,8,3,0,16,-1,0,0,0,0-0-0,0-0-0,||B|0-0-0,0,0,0,0,0,0
+1,70,69,58,1,0,0,0,0,192,0,-1--1--1,,1|(1981,809)|
+1,71,4,58,1,0,0,0,0,192,0,-1--1--1,,1|(1760,290)|
+1,72,69,50,1,0,0,0,0,192,0,-1--1--1,,1|(1834,752)|
+1,73,4,50,1,0,0,0,0,192,0,-1--1--1,,1|(1606,379)|
+1,74,46,54,1,0,0,0,0,192,0,-1--1--1,,1|(1589,702)|
+10,75,Sprint Backlog,1111,661,54,26,3,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,76,78,3,100,0,0,22,0,192,0,-1--1--1,,1|(1004,601)|
+1,77,78,75,4,0,0,22,0,192,0,-1--1--1,,1|(1034,658)|
+11,78,0,1004,658,8,6,33,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,79,input features,1004,690,54,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,80,switch,408,724,46,46,2,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,81,83,75,100,0,0,22,0,192,0,-1--1--1,,1|(1245,672)|
+1,82,83,4,4,0,0,22,0,192,0,-1--1--1,,1|(1332,647)|
+11,83,0,1332,672,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,84,selected features in output,1332,706,64,26,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,85,delay in scrum sprint,1468,789,56,26,8,3,0,16,-1,0,0,0,0-0-0,0-0-0,||B|0-0-0,0,0,0,0,0,0
+1,86,75,84,1,0,0,0,0,192,0,-1--1--1,,1|(1186,793)|
+1,87,85,84,1,0,0,0,0,192,0,-1--1--1,,1|(1373,772)|
+1,88,85,54,1,0,0,0,0,192,0,-1--1--1,,1|(1476,729)|
+1,89,4,84,1,0,0,0,0,192,0,-1--1--1,,1|(1248,618)|
+1,90,3,79,1,0,0,0,0,192,0,-1--1--1,,1|(1031,592)|
+10,91,n0 requirements to do in each iteration,1309,950,72,26,8,3,0,16,-1,0,0,0,0-0-0,0-0-0,||B|0-0-0,0,0,0,0,0,0
+1,92,50,91,1,0,0,0,0,192,0,-1--1--1,,1|(1670,880)|
+1,93,91,58,1,0,0,0,0,192,0,-1--1--1,,1|(1611,1122)|
+1,94,80,3,1,0,0,0,0,192,0,-1--1--1,,1|(645,326)|
+1,95,80,4,1,0,0,0,0,192,0,-1--1--1,,1|(736,205)|
+1,96,80,54,1,0,0,0,0,192,0,-1--1--1,,1|(807,148)|
+1,97,4,54,1,0,0,0,0,192,0,-1--1--1,,1|(1389,673)|
+1,98,80,58,1,0,0,0,0,192,0,-1--1--1,,1|(1428,1390)|
+1,99,80,21,1,0,0,0,0,192,0,-1--1--1,,1|(654,1085)|
+1,100,102,1,100,0,0,22,0,192,0,-1--1--1,,1|(819,741)|
+1,101,102,3,4,0,0,22,0,192,0,-1--1--1,,1|(875,515)|
+11,102,0,819,515,8,6,33,3,0,0,2,0,0,0,0,0,0,0,0,0
+10,103,work to do in Kanban,761,515,50,26,40,3,0,0,-1,1,0,0,0,0,0,0,0,0
+1,104,80,1,1,0,0,0,0,192,0,-1--1--1,,1|(607,990)|
+1,105,1,103,1,0,0,0,0,192,0,-1--1--1,,1|(549,739)|
+1,106,91,8,1,0,0,0,0,192,0,-1--1--1,,1|(1230,718)|
+1,107,80,8,1,0,0,0,0,192,0,-1--1--1,,1|(892,234)|
+1,108,80,45,1,0,0,0,0,192,0,-1--1--1,,1|(1013,80)|
+10,109,error in Kanban,1505,452,60,26,8,3,0,16,-1,0,0,0,0-0-0,0-0-0,||B|0-0-0,0,0,0,0,0,0
+1,110,109,45,1,0,0,0,0,192,0,-1--1--1,,1|(1579,493)|
+1,111,80,91,1,0,0,0,0,192,0,-1--1--1,,1|(909,1136)|
+1,112,80,50,1,0,0,0,0,192,0,-1--1--1,,1|(1223,1279)|
+10,113,"waterfall - 0 scrum - 1 kanban - 2",699,405,74,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,114,80,69,1,0,0,0,0,192,0,-1--1--1,,1|(1120,1328)|
+10,115,Меркутова Кристина 3 группа,2317,287,66,26,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+///---\\\
+:L<%^E!@
+1:waterfall.vdfx
+1:kanban.vdfx
+1:scrum.vdfx
+4:Time
+5:work done
+9:waterfall
+19:45,0
+24:0
+25:2000
+26:2000
+23:0
+15:0,0,0,0,0,0
+27:0,
+34:0,
+42:0
+72:0
+73:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Vensim Sans|12||0-0-0|0-0-0|-1--1--1|0-0-255|192-192-192|-1--1--1
